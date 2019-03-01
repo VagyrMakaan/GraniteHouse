@@ -23,6 +23,22 @@ namespace GraniteHouse.Areas.Admin.Controllers
             return View(_db.ProductType.ToList());
         }
 
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var productType = await _db.ProductType.FindAsync(id);
+            if (productType == null)
+            {
+                return NotFound();
+            }
+
+            return View(productType);
+        }
+
         public IActionResult Create()
         {
             return View();
@@ -107,22 +123,6 @@ namespace GraniteHouse.Areas.Admin.Controllers
             _db.ProductType.Remove(productType);
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var productType = await _db.ProductType.FindAsync(id);
-            if (productType == null)
-            {
-                return NotFound();
-            }
-
-            return View(productType);
         }
     }
 }
