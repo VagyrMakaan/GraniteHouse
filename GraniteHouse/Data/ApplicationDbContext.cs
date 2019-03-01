@@ -15,5 +15,7 @@ namespace GraniteHouse.Data
         }
 
         public DbSet<ProductType> ProductType { get; set; }
+
+        public DbSet<SpecialTag> SpecialTag { get; set; }
     }
 }
