@@ -55,7 +55,7 @@ namespace GraniteHouse.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            return View();
+            return View(productType);
         }
 
         [HttpPost]
@@ -75,6 +75,54 @@ namespace GraniteHouse.Areas.Admin.Controllers
             _db.Update(productType);
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var productType = await _db.ProductType.FindAsync(id);
+            if (productType == null)
+            {
+                return NotFound();
+            }
+
+            return View(productType);
+        }
+
+        [HttpPost,ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var productType = await _db.ProductType.FindAsync(id);
+
+            if (productType == null)
+            {
+                return NotFound();
+            }
+
+            _db.ProductType.Remove(productType);
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var productType = await _db.ProductType.FindAsync(id);
+            if (productType == null)
+            {
+                return NotFound();
+            }
+
+            return View(productType);
         }
     }
 }

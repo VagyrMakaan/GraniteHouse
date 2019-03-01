@@ -12,7 +12,5 @@ namespace GraniteHouse.Models
 
         [Required]
         public string Name { get; set; }
-
-
     }
 }
