@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using GraniteHouse.Data;
+using GraniteHouse.Extensions;
 using GraniteHouse.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,23 +28,45 @@ namespace GraniteHouse.Controllers
             return View(products);
         }
 
-        public IActionResult About()
+        public async Task<IActionResult> Details(int id)
         {
-            ViewData["Message"] = "Your application description page.";
+            var product = await _db.Product.Include(m => m.ProductType).Include(m => m.SpecialTag).Where(m => m.Id == id).FirstOrDefaultAsync();
 
-            return View();
+            return View(product);
         }
 
-        public IActionResult Contact()
+        [HttpPost, ActionName("Details")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DetailsPost(int id)
         {
-            ViewData["Message"] = "Your contact page.";
+            List<int> shoppingCartContents = HttpContext.Session.Get<List<int>>("sesShoppingCart");
 
-            return View();
+            if (shoppingCartContents == null)
+            {
+                shoppingCartContents = new List<int>();
+            }
+
+            shoppingCartContents.Add(id);
+            HttpContext.Session.Set("sesShoppingCart", shoppingCartContents);
+
+            return RedirectToAction(nameof(Index), "Home", new { area = "Customer" });
         }
 
-        public IActionResult Privacy()
+        public IActionResult Remove(int id)
         {
-            return View();
+            List<int> shoppingCartContents = HttpContext.Session.Get<List<int>>("sesShoppingCart");
+
+            if (shoppingCartContents != null && shoppingCartContents.Count > 0)
+            {
+                if (shoppingCartContents.Contains(id))
+                {
+                    shoppingCartContents.Remove(id);
+                }
+            }
+
+            HttpContext.Session.Set("sesShoppingCart", shoppingCartContents);
+
+            return RedirectToAction(nameof(Index), "Home", new { area = "Customer" });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
