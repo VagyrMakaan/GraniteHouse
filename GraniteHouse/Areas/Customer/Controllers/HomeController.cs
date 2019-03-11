@@ -37,7 +37,7 @@ namespace GraniteHouse.Controllers
 
         [HttpPost, ActionName("Details")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DetailsPost(int id)
+        public IActionResult DetailsPost(int id)
         {
             List<int> shoppingCartContents = HttpContext.Session.Get<List<int>>("sesShoppingCart");
 
