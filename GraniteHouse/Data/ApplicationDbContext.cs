@@ -19,5 +19,9 @@ namespace GraniteHouse.Data
         public DbSet<SpecialTag> SpecialTag { get; set; }
 
         public DbSet<Product> Product { get; set; }
+
+        public DbSet<Appointment> Appointment { get; set; }
+
+        public DbSet<ProductSelectedForAppointment> ProductSelectedForAppointment { get; set; }
     }
 }
