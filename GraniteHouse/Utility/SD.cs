@@ -9,5 +9,8 @@ namespace GraniteHouse.Utility
     {
         public const string DefaultProductImage = "default_product.jpg";
         public const string ImageFolder = @"uploads/images/products";
+
+        public const string AdminEndUser = "Admin";
+        public const string SuperAdminEndUser = "Super Admin";
     }
 }
