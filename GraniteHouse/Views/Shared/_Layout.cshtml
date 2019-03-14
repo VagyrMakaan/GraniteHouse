@@ -57,6 +57,13 @@
                     </li>
                 }
 
+                @if (User.IsInRole(SD.SuperAdminEndUser) || User.IsInRole(SD.AdminEndUser))
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Admin" asp-controller="Appointment" asp-action="Index">Appointments</a>
+                    </li>
+                }
+
                 @if (HttpContextAccessor.HttpContext.Session.Get<List<int>>("sesShoppingCart") != null)
                 {
                     <li style="color: white">

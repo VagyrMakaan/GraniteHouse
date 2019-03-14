@@ -11,6 +11,12 @@ namespace GraniteHouse.Models
     {
         public int Id { get; set; }
 
+        [Display(Name = "Sales Person")]
+        public string SalesPersonId { get; set; }
+
+        [ForeignKey("SalesPersonId")]
+        public virtual ApplicationUser SalesPerson { get; set; }
+
         [Required]
         [Display(Name = "Appointment Date")]
         public DateTime AppointmentDate { get; set; }
