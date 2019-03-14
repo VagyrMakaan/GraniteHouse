@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using GraniteHouse.Data;
 using GraniteHouse.Models;
@@ -18,6 +19,7 @@ namespace GraniteHouse.Areas.Admin.Controllers
     public class AppointmentController : Controller
     {
         private readonly ApplicationDbContext _db;
+        private int pageSize = 2;
 
         public AppointmentController(ApplicationDbContext db)
         {
@@ -25,6 +27,7 @@ namespace GraniteHouse.Areas.Admin.Controllers
         }
 
         public async Task<IActionResult> Index(
+            int productPage = 1,
             string searchName = null, 
             string searchEmail = null, 
             string searchPhone = null, 
@@ -38,42 +41,66 @@ namespace GraniteHouse.Areas.Admin.Controllers
             {
                 Appointments = new List<Appointment>(),
             };
-
-            // Why does the course use non-synchronous code?
+                
             appointmentVM.Appointments = _db.Appointment.Include(a => a.SalesPerson).ToList();
-            // appointmentVM.Appointments = await _db.Appointment.Include(a => a.SalesPerson).ToListAsync();
+
+            StringBuilder param = new StringBuilder();
+            param.Append("/Admin/Appointment?productPage=:");
+
             if (User.IsInRole(SD.AdminEndUser))
             {
                 appointmentVM.Appointments = appointmentVM.Appointments.Where(a => a.SalesPersonId == claim.Value).ToList();
             }
-            
+
+            param.Append("&searchName=");
             if (searchName != null)
             {
                 appointmentVM.Appointments = appointmentVM.Appointments.Where(a => a.CustomerName.ToLower().Contains(searchName.ToLower())).ToList();
+                param.Append(searchName);
             }
 
+            param.Append("&searchEmail=");
             if (searchEmail != null)
             {
                 appointmentVM.Appointments = appointmentVM.Appointments.Where(a => a.CustomerEmail.ToLower().Contains(searchEmail.ToLower())).ToList();
+                param.Append(searchEmail);
             }
 
+            param.Append("&searchPhone=");
             if (searchPhone != null)
             {
                 appointmentVM.Appointments = appointmentVM.Appointments.Where(a => a.CustomerPhoneNumber.ToLower().Contains(searchPhone.ToLower())).ToList();
+                param.Append(searchPhone);
             }
 
+            param.Append("&searchDate=");
             if (searchDate != null)
             {
                 try
                 {
                     DateTime date = Convert.ToDateTime(searchDate);
                     appointmentVM.Appointments = appointmentVM.Appointments.Where(a => a.AppointmentDate.ToShortDateString().Equals(date.ToShortDateString())).ToList();
+                    param.Append(searchDate);
                 }
                 catch (Exception ex)
                 {
 
                 }
             }
+
+            var count = appointmentVM.Appointments.Count;
+
+            appointmentVM.Appointments = appointmentVM.Appointments.OrderBy(a => a.AppointmentDate)
+                .Skip((productPage - 1) * pageSize)
+                .Take(pageSize).ToList();
+
+            appointmentVM.PagingInfo = new PagingInfo()
+            {
+                CurrentPage = productPage,
+                ItemsPerPage = pageSize,
+                TotalItems = count,
+                UrlParam = param.ToString()
+            };
 
             return View(appointmentVM);
         }
